@@ -5,6 +5,7 @@ interface Reservation {
 	partySize: number
 	desiredTimeSlots: string[]
 	excludedDays: string[]
+	includedDays: string[]
 	dryRun: boolean
 }
 
@@ -39,6 +40,7 @@ describe('book reservation', () => {
 			bookingPage: Cypress.env('bookingPage'),
 			desiredTimeSlots: Cypress.env('desiredTimeSlots'),
 			excludedDays: Cypress.env('excludedDays'),
+			includedDays: Cypress.env('includedDays'),
 			dryRun: Cypress.env('dryRun'),
 		}
 		cy.wrap(reservation.bookingPage).should('be.ok')
@@ -46,6 +48,7 @@ describe('book reservation', () => {
 		cy.wrap(reservation.dryRun).should('be.a', 'boolean')
 		cy.wrap(reservation.desiredTimeSlots).should('be.a', 'array')
 		cy.wrap(reservation.excludedDays).should('be.a', 'array')
+		cy.wrap(reservation.includedDays).should('be.a', 'array')
 
 	})
 
@@ -65,9 +68,12 @@ describe('book reservation', () => {
 			.get(tid('consumer-calendar-day'))
 			.filter('[aria-disabled=false].is-available')
 			.then((days) => cy.wrap(
-				days.filter((i, el) => 
-					reservation.excludedDays.length === 0 ||
-					reservation.excludedDays.indexOf(el.ariaLabel) < 0)
+				days.filter((i, el) => {
+					const dayLabel = el.ariaLabel
+					const isExcluded = reservation.excludedDays.length > 0 && reservation.excludedDays.indexOf(dayLabel) >= 0
+					const isIncluded = reservation.includedDays.length === 0 || reservation.includedDays.indexOf(dayLabel) >= 0
+					return !isExcluded && isIncluded
+				})
 			))
 	}
 
