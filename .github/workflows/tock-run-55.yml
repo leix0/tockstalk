@@ -12,6 +12,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm install
-      - run: echo '${{ secrets.CYPRESS_ENV_JSON }}' > cypress.env.json
-      - run: npm run tock
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+      - run: echo '${{ secrets.CYPRESS_ENV }}' > cypress.env.json
+      - run: npm ci
+      - run: npm test
