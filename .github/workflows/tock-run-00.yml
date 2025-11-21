@@ -1,0 +1,17 @@
+name: Run Tock Bot (0s)
+
+on:
+  schedule:
+    - cron: "0 4 * * 6" # Friday 8:00:00 PM PST → Saturday 04:00:00 UTC
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: echo '${{ secrets.CYPRESS_ENV_JSON }}' > cypress.env.json
+      - run: npm run tock
