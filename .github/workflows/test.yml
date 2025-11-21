@@ -1,0 +1,19 @@
+name: Run Tock Bot (test - Friday 3pm PST)
+
+on:
+  schedule:
+    - cron: "0 23 * * 5"
+
+jobs:
+  run-bot-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+      - run: echo '${{ secrets.CYPRESS_ENV_TEST }}' > cypress.env.json
+      - run: npm ci
+      - run: npm test
